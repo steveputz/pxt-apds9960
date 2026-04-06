@@ -168,9 +168,9 @@ namespace apds9960 {
         let c = i2cread(ADDR, APDS9960_CDATAL) + i2cread(ADDR, APDS9960_CDATAH)*256;
         return c
     }
-    //% blockId=apds9960_readcrgb block="APDS9960 Get CRGB"
+    //% blockId=apds9960_readrgb block="APDS9960 Get RGB"
     //% weight=98
-    export function ReadCRGB(): number {
+    export function ReadRGB(): number {
         let tmp = i2cread(ADDR, APDS9960_STATUS) & 0x1;
         while(!tmp){
             basic.pause(5);
@@ -180,11 +180,13 @@ namespace apds9960 {
         let r = i2cread(ADDR, APDS9960_RDATAL) + i2cread(ADDR, APDS9960_RDATAH)*256;
         let g = i2cread(ADDR, APDS9960_GDATAL) + i2cread(ADDR, APDS9960_GDATAH)*256;
         let b = i2cread(ADDR, APDS9960_BDATAL) + i2cread(ADDR, APDS9960_BDATAH)*256;
-        // encode upper bytes of c,r,g,b into an integer
-        let val = (c << 16) & 0xFF000000;
-        val |= (r << 8)     & 0x00FF0000;
-        val |= (g)          & 0x0000FF00;
-        val |= (b >> 8)     & 0x000000FF;
+        let avg = c/3;
+        r = r*255/avg;
+        g = g*255/avg;
+        b = b*255/avg;
+        val |= (r << 8)     & 0xFF0000;
+        val |= (g)          & 0x00FF00;
+        val |= (b >> 8)     & 0x0000FF;
         return val
     }
 
