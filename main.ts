@@ -157,5 +157,35 @@ namespace apds9960 {
         let hue = rgb2hue(r,g,b);
         return hue
     }
+    //% blockId=apds9960_readlight block="APDS9960 Get Light"
+    //% weight=98
+    export function ReadLight(): number {
+        let tmp = i2cread(ADDR, APDS9960_STATUS) & 0x1;
+        while(!tmp){
+            basic.pause(5);
+            tmp = i2cread(ADDR, APDS9960_STATUS) & 0x1;
+        }
+        let c = i2cread(ADDR, APDS9960_CDATAL) + i2cread(ADDR, APDS9960_CDATAH)*256;
+        return c
+    }
+    //% blockId=apds9960_readcrgb block="APDS9960 Get CRGB"
+    //% weight=98
+    export function ReadCRGB(): number {
+        let tmp = i2cread(ADDR, APDS9960_STATUS) & 0x1;
+        while(!tmp){
+            basic.pause(5);
+            tmp = i2cread(ADDR, APDS9960_STATUS) & 0x1;
+        }
+        let c = i2cread(ADDR, APDS9960_CDATAL) + i2cread(ADDR, APDS9960_CDATAH)*256;
+        let r = i2cread(ADDR, APDS9960_RDATAL) + i2cread(ADDR, APDS9960_RDATAH)*256;
+        let g = i2cread(ADDR, APDS9960_GDATAL) + i2cread(ADDR, APDS9960_GDATAH)*256;
+        let b = i2cread(ADDR, APDS9960_BDATAL) + i2cread(ADDR, APDS9960_BDATAH)*256;
+        // encode upper bytes of c,r,g,b into an integer
+        let val = (c << 16) & 0xFF000000;
+        val |= (r << 8)     & 0x00FF0000;
+        val |= (g)          & 0x0000FF00;
+        val |= (b >> 8)     & 0x000000FF;
+        return val
+    }
 
 }
