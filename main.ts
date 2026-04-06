@@ -187,7 +187,7 @@ namespace apds9960 {
         let val = 0;
         val |= ((r >> 6) << 20) & 0x3FF00000;
         val |= ((g >> 6) << 10) & 0x000FFC00;
-        val |= ((b  >> 6)     ) & 0x00003FFF;
+        val |= ((b >> 6)      ) & 0x000003FF;
         return val
     }
 
