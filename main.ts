@@ -185,9 +185,9 @@ namespace apds9960 {
         g = g*255/avg;
         b = b*255/avg;
         let val = 0;
-        val |= (r << 20) & 0x3FF00000;
-        val |= (g << 10) & 0x000FFC00;
-        val |= (b      ) & 0x00003FFF;
+        val |= ((r >> 6) << 20) & 0x3FF00000;
+        val |= ((g >> 6) << 10) & 0x000FFC00;
+        val |= ((b  >> 6)     ) & 0x00003FFF;
         return val
     }
 
