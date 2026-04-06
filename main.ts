@@ -180,10 +180,6 @@ namespace apds9960 {
         let r = i2cread(ADDR, APDS9960_RDATAL) + i2cread(ADDR, APDS9960_RDATAH)*256;
         let g = i2cread(ADDR, APDS9960_GDATAL) + i2cread(ADDR, APDS9960_GDATAH)*256;
         let b = i2cread(ADDR, APDS9960_BDATAL) + i2cread(ADDR, APDS9960_BDATAH)*256;
-        let avg = c/3;
-        r = r*255/avg;
-        g = g*255/avg;
-        b = b*255/avg;
         let val = 0;
         val |= ((r >> 6) << 20) & 0x3FF00000;
         val |= ((g >> 6) << 10) & 0x000FFC00;
