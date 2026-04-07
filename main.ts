@@ -210,11 +210,11 @@ namespace apds9960 {
         g = 100 * g/avg;
         b = 100 * b/avg;
 
-        let cmax = Math.max(r, Math.max(g, b))
-        let cmin = Math.min(r, Math.min(g, b))
+        let cmax = Math.max(r, Math.max(g, b));
+        let cmin = Math.min(r, Math.min(g, b));
         let diff = cmax - cmin;
-        serial.writeValue("HSV cmax", cmax)
-        serial.writeValue("HSV diff", diff
+        serial.writeValue("HSV cmax", cmax);
+        serial.writeValue("HSV diff", diff);
         
         let hue = 0;
         let segment = 0;
@@ -244,14 +244,14 @@ namespace apds9960 {
         }
         hue = hue * 60/100;
         
-        let sat = cmax == 0 ? 0 : diff / cmax
-        let val = cmax
+        let sat = cmax == 0 ? 0 : diff / cmax;
+        let val = cmax;
         
         let hsv = 0;
         hsv |= (hue << 16) & 0xFF0000;
         hsv |= (sat << 8)  & 0x00FF00;
         hsv |= (val)       & 0x0000FF;
-        return hsv
+        return hsv;
     }
 
 }
