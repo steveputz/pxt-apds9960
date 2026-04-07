@@ -220,7 +220,7 @@ namespace apds9960 {
         let segment = 0;
         let shift = 0;
         if (c != 0) {
-            switch (max) {
+            switch (cmax) {
                 case r:
                     segment = (g - b) * 100 / diff;
                     shift = 0;       // R° / (360° / hex sides)
