@@ -180,11 +180,78 @@ namespace apds9960 {
         let r = i2cread(ADDR, APDS9960_RDATAL) + i2cread(ADDR, APDS9960_RDATAH)*256;
         let g = i2cread(ADDR, APDS9960_GDATAL) + i2cread(ADDR, APDS9960_GDATAH)*256;
         let b = i2cread(ADDR, APDS9960_BDATAL) + i2cread(ADDR, APDS9960_BDATAH)*256;
+        serial.writeValue("raw_c", c)
+        serial.writeValue("raw_r", r)
+        serial.writeValue("raw_g", g)
+        serial.writeValue("raw_b", b)
         let val = 0;
         val |= ((r>>2) << 20) & 0x3FF00000;
         val |= ((g>>2) << 10) & 0x000FFC00;
         val |= ((b>>2)      ) & 0x000003FF;
         return val
+    }
+
+    //% blockId=apds9960_readhsv block="APDS9960 Get HSV"
+    //% weight=98
+    export function ReadHSV(): number {
+        let tmp = i2cread(ADDR, APDS9960_STATUS) & 0x1;
+        while(!tmp){
+            basic.pause(5);
+            tmp = i2cread(ADDR, APDS9960_STATUS) & 0x1;
+        }
+        let c = i2cread(ADDR, APDS9960_CDATAL) + i2cread(ADDR, APDS9960_CDATAH)*256;
+        let r = i2cread(ADDR, APDS9960_RDATAL) + i2cread(ADDR, APDS9960_RDATAH)*256;
+        let g = i2cread(ADDR, APDS9960_GDATAL) + i2cread(ADDR, APDS9960_GDATAH)*256;
+        let b = i2cread(ADDR, APDS9960_BDATAL) + i2cread(ADDR, APDS9960_BDATAH)*256;
+
+        // map to rgb 0..100 based on clear channel
+        let avg = c/3;
+        r = 100 * r/avg;
+        g = 100 * g/avg;
+        b = 100 * b/avg;
+
+        let cmax = Math.max(r, Math.max(g, b))
+        let cmin = Math.min(r, Math.min(g, b))
+        let diff = cmax - cmin;
+        serial.writeValue("HSV cmax", cmax)
+        serial.writeValue("HSV diff", diff
+        
+        let hue = 0;
+        let segment = 0;
+        let shift = 0;
+        if (c != 0) {
+            switch (max) {
+                case r:
+                    segment = (g - b) * 100 / diff;
+                    shift = 0;       // R° / (360° / hex sides)
+                    if (segment < 0) {          // hue > 180, full rotation
+                        shift = 360 / 60;         // R° / (360° / hex sides)
+                    }
+                    hue = segment + shift;
+                    break;
+                case g:
+                    segment = (b - r) * 100 / diff;
+                    shift = 200;     // G° / (360° / hex sides)
+                    hue = segment + shift;
+                    break;
+                case b:
+                    segment = (r - g) * 100 / diff;
+                    shift = 400;     // B° / (360° / hex sides)
+                    hue = segment + shift;
+                    break;
+            }
+
+        }
+        hue = hue * 60/100;
+        
+        let sat = cmax == 0 ? 0 : diff / cmax
+        let val = cmax
+        
+        let hsv = 0;
+        hsv |= (hue << 16) & 0xFF0000;
+        hsv |= (sat << 8)  & 0x00FF00;
+        hsv |= (val)       & 0x0000FF;
+        return hsv
     }
 
 }
